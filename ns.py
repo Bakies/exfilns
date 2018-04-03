@@ -80,6 +80,7 @@ class ExfilResolver(BaseResolver):
                 self.files[filename][int(index)] = data
             else:
                 reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("data already received")))
+                return reply
         except KeyError:
             reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("File not found")))
             return reply
@@ -98,7 +99,7 @@ class ExfilResolver(BaseResolver):
         nones = len([x for x in self.files[filename] if x is None])
         if nones is 0: 
             # The file is ready for output
-            print("File:", filename, "completed upload")
+            print("File:", filename, "100 % complete")
             with open(filename, "w") as f:
                 for x in self.files[filename]: 
                     f.write(x)
