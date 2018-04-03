@@ -41,7 +41,7 @@ echo "This file will take $linestot dns requests"
 # Starting file request 
 echo "start-$linestot.$filesuffix.$domain"
 #dig "start-$linestot.000.$filesuffix.$domain" @localhost TXT &> /dev/null 
-dig "start-$linestot.000.$filesuffix.$domain" TXT &> /dev/null 
+dig +short "start-$linestot.000.$filesuffix.$domain" TXT 
 
 while read -r line ; do 
 	line=$(echo -n "$line" | sed "s/NUM/$index/")
@@ -51,5 +51,5 @@ while read -r line ; do
 	fi 
 	echo "$line"
 	#dig $line @localhost TXT &> /dev/null & 
-	dig $line TXT &> /dev/null & 
+	dig +short $line TXT  
 done <<< $(echo "$output")
