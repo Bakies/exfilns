@@ -80,6 +80,7 @@ class ExfilResolver(BaseResolver):
             if self.files[filename][int(index)] is not None:
                 self.files[filename][int(index)] = data
             else:
+                print("Data already recieved")
                 reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("data already received")))
         except KeyError:
             print("Key error:84") 
@@ -108,10 +109,11 @@ class ExfilResolver(BaseResolver):
             print("File:", filename, "written to disk")
             # TODO decode the file
             del self.files[filename]
-                
         else:
             # The file is not ready for output
             print("File:", filename, nones, "/", len(self.files[filename]), "% complete")
+            print("File:", filename, "is still missing", nones, "lines")
+
 
 if __name__ == '__main__':
 
