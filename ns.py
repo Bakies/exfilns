@@ -77,7 +77,7 @@ class ExfilResolver(BaseResolver):
 
         # print("DATA RECV:", filename, index, data)
         try:
-            if self.files[filename][int(index)] is not None:
+            if self.files[filename][int(index)] is None:
                 self.files[filename][int(index)] = data
             else:
                 print("Data already recieved")
@@ -99,6 +99,7 @@ class ExfilResolver(BaseResolver):
     # this is for checking if a fileupload is complete 
     def checkfile(self, filename):
         # this is one dense line of code
+        print(self.files[filename])
         nones = len([x for x in self.files[filename] if x is None])
         if nones is 0: 
             # The file is ready for output
