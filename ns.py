@@ -91,6 +91,7 @@ class ExfilResolver(BaseResolver):
             print("File:", filename, "written to disk")
             # TODO decode the file
             # TODO delete that dictionary entry for mem reasons
+            del self.files[filename]
                 
         else:
             # The file is not ready for output
