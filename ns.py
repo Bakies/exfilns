@@ -107,7 +107,7 @@ class ExfilResolver(BaseResolver):
             del self.files[filename]
         else:
             # The file is not ready for output
-            print("File:", filename, nones/len(self.files[filename]), "% complete")
+            print("File:", filename, int((len(self.files[filename]) - nones)/len(self.files[filename]) * 100), "% complete")
 
 
 if __name__ == '__main__':
