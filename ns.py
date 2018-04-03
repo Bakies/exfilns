@@ -74,7 +74,7 @@ class ExfilResolver(BaseResolver):
         try:
             if self.files[filename][int(index)] is not None:
                 self.files[filename][int(index)] = data
-            elif 
+            else:
                 reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("data already received")))
         except KeyError:
             reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("File not found")))
