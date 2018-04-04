@@ -100,7 +100,7 @@ class ExfilResolver(BaseResolver):
         if nones is 0: 
             # The file is ready for output
             print("File:", filename, "100 % complete")
-            with open(filename, "w") as f:
+            with open("./exfil/" + filename, "w") as f:
                 for x in self.files[filename]: 
                     f.write(x)
             print("File:", filename, "written to disk")
