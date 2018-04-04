@@ -49,12 +49,13 @@ class ExfilResolver(BaseResolver):
     def infil(self, request, qname):
         reply = request.reply()
         if qname.split(".")[-2] == "list":
+            print("Listing files")
             reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(str(os.listdir("infil")).replace(".", "-"))))
             return reply
         # else
         filename = qname.split(".")[-2].replace("-",".")
         if filename not in os.listdir("infil"):
-            reply.head.rcode = RCODE.NXDOMAIN 
+            reply.header.rcode = RCODE.NXDOMAIN 
             return reply 
         index = qname.split(".")[-3]
         if index == "info":
