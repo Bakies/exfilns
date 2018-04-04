@@ -103,7 +103,7 @@ class ExfilResolver(BaseResolver):
             print("File:", filename, "100 % complete")
             with open("./exfil/" + filename, "w") as f:
                 for x in self.files[filename]: 
-                    f.write(x)
+                    f.write(x.replace("1", "="))
             print("File:", filename, "written to disk")
             # TODO decode the file
             del self.files[filename]

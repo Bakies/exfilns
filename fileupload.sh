@@ -34,7 +34,7 @@ fi
 filesuffix=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 10 | head -n 1) 
 domain=$(echo "ex." "$2" | sed 's/ //g') 
 index=0
-output=$(cat $1 | base32 -w 63 | tr '[:upper:]' '[:lower:]' | sed "s/\$/.NUM.$filesuffix.$domain/")
+output=$(cat $1 | base32 -w 63 | tr '[:upper:]' '[:lower:]' | sed "s/\$/.NUM.$filesuffix.$domain/" | sed 's/=/1/g')
 linestot=$(echo "$output" | wc -l) 
 echo "This file will take $linestot dns requests" 
 
