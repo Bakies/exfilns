@@ -45,6 +45,7 @@ class ExfilResolver(BaseResolver):
     
     # files in the infil dir need to be pre-formatted currently TODO
     def infil(self, request, qname):
+        reply = request.reply()
         if qname.split(".")[-2] == "list":
             reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(str(os.listdir("infil")).replace(".", "-"))))
             return reply
