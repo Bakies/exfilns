@@ -5,6 +5,8 @@ from dnslib import RR,QTYPE,RCODE,TXT,parse_time
 from dnslib.label import DNSLabel
 from dnslib.server import DNSServer,DNSHandler,BaseResolver,DNSLogger
 
+import os
+
 class ExfilResolver(BaseResolver):
     def __init__(self,origin,ttl):
         self.origin = DNSLabel(origin)
