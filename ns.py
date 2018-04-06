@@ -41,6 +41,7 @@ class ExfilResolver(BaseResolver):
             return self.infil(request, qname)
         
         print("Module not found:", module)
+        print("Request: ", request.q.qname) 
         reply.header.rcode = RCODE.NXDOMAIN
         return reply
 
@@ -53,11 +54,11 @@ class ExfilResolver(BaseResolver):
             reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(str(os.listdir("infil")).replace(".", "-"))))
             return reply
         # else
-        filename = qname.split(".")[-2].replace("-",".")
+        filename = qname.split(".")[-3].replace("-",".")
         if filename not in os.listdir("infil"):
             reply.header.rcode = RCODE.NXDOMAIN 
             return reply 
-        index = qname.split(".")[-3]
+        index = qname.split(".")[-2]
         if index == "info":
             with open("infil/" + filename) as f:
                 message = "File is " + str(len(f.readlines())) + " lines long"
@@ -75,6 +76,7 @@ class ExfilResolver(BaseResolver):
         with open("infil/" + filename) as f:
             line = f.readlines()[indexnum]
             reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(line)))
+            return reply
 
 
     # unimplemented
@@ -164,7 +166,7 @@ if __name__ == '__main__':
     args = p.parse_args()
 
     resolver = ExfilResolver(args.origin,"60s")
-    logger = DNSLogger("-request,-reply",False)
+    logger = DNSLogger("-reply",False)
 
     udp_server = DNSServer(resolver, address="0.0.0.0", logger=logger)
     udp_server.start_thread()
