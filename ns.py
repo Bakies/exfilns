@@ -160,7 +160,7 @@ class ExfilResolver(BaseResolver):
             for x in self.files[filename]:
                 s = s + x 
             # write the file
-            with open("./exfil/" + filename, "w") as f:
+            with open("./exfil/" + filename, "wb") as f:
                 f.write(base64.b32decode(s.replace("1", "="), casefold=True))
             print("File:", filename, "written to disk")
             del self.files[filename]
