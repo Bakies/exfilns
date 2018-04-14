@@ -186,7 +186,7 @@ if __name__ == '__main__':
     if args.verbose:
         logger = DNSLogger("",False)
     else:
-        logger = DNSLogger("-response,-reply",False)
+        logger = DNSLogger("-request,-reply",False)
         
 
     udp_server = DNSServer(resolver, address="0.0.0.0", logger=logger)
