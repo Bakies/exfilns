@@ -53,3 +53,5 @@ while read -r line ; do
 	#dig $line @localhost TXT &> /dev/null & 
 	dig +short $line TXT  & 
 done <<< $(echo "$output")
+
+wait

