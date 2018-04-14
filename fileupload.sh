@@ -51,7 +51,11 @@ while read -r line ; do
 	fi 
 	echo "$line"
 	#dig $line @localhost TXT &> /dev/null & 
+<<<<<<< HEAD
 	dig +short $line TXT  & 
+=======
+	dig +short $line TXT &> /dev/null &
+>>>>>>> dev
 done <<< $(echo "$output")
 
 wait
