@@ -175,7 +175,7 @@ if __name__ == '__main__':
     import argparse,sys,time
 
     p = argparse.ArgumentParser(description="Exfil NS")
-    p.add_argument("-v","--verbose",default=True,metavar="<verbose")
+    p.add_argument("-v","--verbose",default=False,metavar="<verbose")
     p.add_argument("--origin","-o",required=True,
                     metavar="<origin>",
                     help="Origin domain label (Ex: example.com)")
