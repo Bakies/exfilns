@@ -114,7 +114,7 @@ class ExfilResolver(BaseResolver):
             reply.header.rcode = RCODE.NXDOMAIN
             return reply
             
-        data = qname.split(".")[0].upper()
+        data = qname.split(".")[0].upper().replace("1","=")
         index = qname.split(".")[1]
         filename = qname.split(".")[2]
 
