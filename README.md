@@ -37,14 +37,15 @@ sxg5akkrugs4zanfzsayjaorsxg5ak.6.aJw0K723Xh.fu.exfil.baki.es
 And like this from the server output will now have something like this:
 ```
 New file incoming, lines: 7
-File: aJw0K723Xh is still missing 6 lines
-File: aJw0K723Xh is still missing 5 lines
-File: aJw0K723Xh is still missing 4 lines
-File: aJw0K723Xh is still missing 3 lines
-File: aJw0K723Xh is still missing 2 lines
-File: aJw0K723Xh is still missing 1 lines
-File: aJw0K723Xh completed upload
-File: aJw0K723Xh written to disk
+File: gpvkwjwoh6 14 % complete
+File: gpvkwjwoh6 28 % complete
+File: gpvkwjwoh6 42 % complete
+File: gpvkwjwoh6 57 % complete
+File: gpvkwjwoh6 71 % complete
+File: gpvkwjwoh6 85 % complete
+File: gpvkwjwoh6 100 % complete
+File: gpvkwjwoh6 written to disk
+
 ```
 
 The file is given a unique handle (above `aJw0K723Xh`) and is written in the same folder as the python script and is base32 encoded 

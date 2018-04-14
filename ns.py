@@ -109,7 +109,6 @@ class ExfilResolver(BaseResolver):
         reply = request.reply()
         if len(qname.split(".")) != 4:
             error = "Error: Incorrect amount of subdomains"
-            print(error)
             # reply.add_answer(RR(request.q.qname,QTYPE.TXT,ttl=self.ttl, rdata=TXT(error)))
             reply.header.rcode = RCODE.NXDOMAIN
             return reply
