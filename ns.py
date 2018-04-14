@@ -156,6 +156,7 @@ class ExfilResolver(BaseResolver):
             # The file is ready for output
             print("File:", filename, "100 % complete")
             # Decode the file 
+            s = ""
             for x in self.files[filename]:
                 s = s + x 
             # write the file
