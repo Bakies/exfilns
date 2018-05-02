@@ -50,12 +50,8 @@ while read -r line ; do
 		sleep 1 # some breathing room every 50 requests, may need adjusting
 	fi 
 	echo "$line"
-	#dig $line @localhost TXT &> /dev/null & 
-<<<<<<< HEAD
+	#dig $line @localhost TXT &> /dev/null &
 	dig +short $line TXT  & 
-=======
-	dig +short $line TXT &> /dev/null &
->>>>>>> dev
 done <<< $(echo "$output")
 
 wait
